@@ -1,5 +1,5 @@
-import { LocalRepo, Service, PackageType, FindRepoRequest, CloneRequest, CloneResponse, OpenRequest } from "./interfaces";
-import { RpcClient } from "./RpcClient";
+import {CloneRequest, CloneResponse, FindRepoRequest, LocalRepo, OpenRequest, PackageType, Service} from './interfaces';
+import {RpcClient} from './RpcClient';
 
 /**
  *

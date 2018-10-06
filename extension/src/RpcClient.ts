@@ -1,5 +1,5 @@
-import { PackageBasis, PackageType } from "./interfaces";
-import { uuid } from "./util";
+import {PackageBasis, PackageType} from './interfaces';
+import {uuid} from './util';
 
 /**
  *
@@ -29,7 +29,7 @@ export class RpcClient {
     constructor(options?: Partial<RpcClientOptions>) {
         this.options = {
             ...{
-                endpoint: "ws://localhost:123/api",
+                endpoint: 'ws://localhost:123/api',
                 callTimeout: 10000
             },
             ...options
@@ -38,16 +38,16 @@ export class RpcClient {
 
     public connect() {
         this.ws = new WebSocket(this.options.endpoint);
-        this.ws.addEventListener("message", this.onMessage.bind(this));
-        this.ws.addEventListener("open", () => {
-            console.debug("websocket connected");
+        this.ws.addEventListener('message', this.onMessage.bind(this));
+        this.ws.addEventListener('open', () => {
+            console.debug('websocket connected');
         });
-        this.ws.addEventListener("error", (err) => {
-            console.error("websocket error", err);
+        this.ws.addEventListener('error', (err) => {
+            console.error('websocket error', err);
             this.ws = undefined;
         });
-        this.ws.addEventListener("close", () => {
-            console.info("websocket closed");
+        this.ws.addEventListener('close', () => {
+            console.info('websocket closed');
             if (this.options.retryTimeout && this.options.retryTimeout > 0) {
                 setTimeout(this.connect.bind(this), this.options.retryTimeout);
             }
@@ -72,7 +72,7 @@ export class RpcClient {
             if (options && options.timeout || this.options.callTimeout) {
                 setTimeout(
                     () => {
-                        reject(new Error("Request Timeout"));
+                        reject(new Error('Request Timeout'));
                     },
                     options && options.timeout ? options.timeout : this.options.callTimeout
                 );
@@ -95,12 +95,12 @@ export class RpcClient {
         try {
             obj = JSON.parse(evt.data);
         } catch (err) {
-            console.debug("Invalid Package", err.message);
+            console.debug('Invalid Package', err.message);
 
             return;
         }
         if (!obj || !obj.kind || !obj.uuid) {
-            console.debug("Invalid Package", evt.data);
+            console.debug('Invalid Package', evt.data);
 
             return;
         }
@@ -119,12 +119,12 @@ export class RpcClient {
             return;
         }
 
-        console.debug("Unhandled package", obj);
+        console.debug('Unhandled package', obj);
     }
 
     private sendInternal(pkg: PackageBasis): void {
         if (!this.ws) {
-            throw new Error("Not connected to backend");
+            throw new Error('Not connected to backend');
         }
         this.ws.send(JSON.stringify(pkg));
     }

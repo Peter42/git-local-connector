@@ -3,13 +3,13 @@
  */
 
 export enum PackageType {
-    Empty = "Empty",
-    Hello = "Hello",
-    FindRepoRequest = "FindRepoRequest",
-    LocalRepo = "LocalRepo",
-    CloneRequest = "CloneRequest",
-    CloneResponse = "CloneResponse",
-    OpenRequest = "OpenRequest"
+    Empty = 'Empty',
+    Hello = 'Hello',
+    FindRepoRequest = 'FindRepoRequest',
+    LocalRepo = 'LocalRepo',
+    CloneRequest = 'CloneRequest',
+    CloneResponse = 'CloneResponse',
+    OpenRequest = 'OpenRequest'
 }
 
 export interface PackageBasis {
@@ -50,6 +50,8 @@ export interface LocalRepo {
 
 export interface Service {
     findRepo(name: string): Promise<LocalRepo>;
+
     clone(url: string, localPath?: string): Promise<string>;
+
     open(repo: LocalRepo): Promise<void>;
 }
