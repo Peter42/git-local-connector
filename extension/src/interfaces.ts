@@ -3,7 +3,9 @@
  */
 
 export enum PackageType {
-    Empty = 'Empty',
+    VoidResponse = 'VoidResponse',
+    ErrorResponse = 'ErrorResponse',
+
     Hello = 'Hello',
     FindRepoRequest = 'FindRepoRequest',
     LocalRepo = 'LocalRepo',
@@ -19,9 +21,13 @@ export interface PackageBasis {
     data: any;
 }
 
+export interface ErrorResponse {
+    msg: string;
+}
+
 export interface HelloPackage {
     uuid: string;
-    version: string;
+    version: number;
 }
 
 export interface FindRepoRequest {
