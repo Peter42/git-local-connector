@@ -31,6 +31,7 @@ build:daemon:linux:
   image: golang:1.11
   script:
   - cd daemon
+  - ln -s /builds /go/src/gitlab.com
   - GOOS=linux GOARCH=amd64 go build -v ./...
   artifacts:
     paths:
@@ -41,6 +42,7 @@ build:daemon:linux:
 #  image: golang:1.11
 #  script:
 #  - cd daemon
+#  - ln -s /builds /go/src/gitlab.com
 #  - GOOS=darwin GOARCH=amd64 go build -v ./...
 #  artifacts:
 #    paths:
@@ -51,6 +53,7 @@ build:daemon:windows:
   image: golang:1.11
   script:
   - cd daemon
+  - ln -s /builds /go/src/gitlab.com
   - GOOS=windows GOARCH=amd64 go build -v ./...
   artifacts:
     paths:
