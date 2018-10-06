@@ -22,7 +22,11 @@
       "PromiseLike"
     ],
     "no-unsafe-any": false,
-    "completed-docs": false
+    "completed-docs": false,
+    "quotemark": false,
+    "no-console": false,
+    "typedef": false,
+    "no-bitwise": false
   },
   "rulesDirectory": []
 }

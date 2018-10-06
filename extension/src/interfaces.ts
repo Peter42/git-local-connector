@@ -2,14 +2,18 @@
  * Interfaces
  */
 
-export enum Packages {
+export enum PackageType {
+    Empty = "Empty",
     Hello = "Hello",
     FindRepoRequest = "FindRepoRequest",
-    CloneRequest = "CloneRequest"
+    LocalRepo = "LocalRepo",
+    CloneRequest = "CloneRequest",
+    CloneResponse = "CloneResponse",
+    OpenRequest = "OpenRequest"
 }
 
 export interface PackageBasis {
-    id: Packages;
+    kind: PackageType;
     uuid: string;
     // tslint:disable-next-line:no-any
     data: any;
