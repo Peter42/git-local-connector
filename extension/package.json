@@ -5,12 +5,38 @@
   "description": "tbd",
   "main": "background.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "./node_modules/.bin/tsc"
+    "build": "tsc",
+    "test": "NODE_ENV=development mocha 'test/**/*.ts'",
+    "cover": "NODE_ENV=development nyc -a mocha 'test/**/*.ts'",
+    "lint": "NODE_ENV=development tslint --project tsconfig.json --config tslint.json --format verbose"
   },
   "author": "Philipp Stehle",
   "license": "Apache-2.0",
   "devDependencies": {
-    "typescript": "^3.0.3"
+    "mocha": "^5.2.0",
+    "nyc": "^13.0.1",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.0.3",
+    "tslint": "^5.11.0",
+    "tslint-microsoft-contrib": "^5.2.1"
+  },
+  "dependencies": {
+    "grpc-web": "^0.4.0"
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "all": true
   }
 }

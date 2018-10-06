@@ -3,25 +3,63 @@ stages:
 - test
 - build
 
-compile_daemon:
-  stage: compile
-  image: golang:1.11
-  script:
-  - cd daemon
-  - go build -v
-
-compile_extension:
+compile:extension:
   stage: compile
   image: node:10
   script:
   - cd extension
   - npm install
-  - npm build
+  - npm run-script build
 
-test_daemon:
+test:daemon:
   stage: test
   image: golang:1.11
   script:
   - cd daemon
   - go test -cover -v ./...
 
+test:extension:
+  stage: test
+  image: node:10
+  script:
+  - cd extension
+  - npm install
+  - npm run-script build
+
+build:daemon:linux:
+  stage: build
+  image: golang:1.11
+  script:
+  - cd daemon
+  - GOOS=linux GOARCH=amd64 go build -v ./...
+  artifacts:
+    paths:
+    - /builds/phil9909/gitlab-local-connector/gitlab-local-connector
+
+#build:daemon:mac:
+#  stage: build
+#  image: golang:1.11
+#  script:
+#  - cd daemon
+#  - GOOS=darwin GOARCH=amd64 go build -v ./...
+#  artifacts:
+#    paths:
+#    - /builds/phil9909/gitlab-local-connector/gitlab-local-connector
+
+build:daemon:windows:
+  stage: build
+  image: golang:1.11
+  script:
+  - cd daemon
+  - GOOS=windows GOARCH=amd64 go build -v ./...
+  artifacts:
+    paths:
+    - /builds/phil9909/gitlab-local-connector/gitlab-local-connector.exe
+
+build:extension:
+  stage: build
+  image: node:10
+  script:
+  - cd extension
+  - npm install
+  - npm run-script build

@@ -1,0 +1,28 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint-microsoft-contrib"
+  ],
+  "jsRules": {
+  },
+  "rules": {
+    "no-relative-imports": false,
+    "no-implicit-dependencies": [
+      true,
+      "dev"
+    ],
+    "no-backbone-get-set-outside-model": false,
+    "interface-name": [
+      true,
+      "never-prefix"
+    ],
+    "export-name": false,
+    "await-promise": [
+      true,
+      "PromiseLike"
+    ],
+    "no-unsafe-any": false,
+    "completed-docs": false
+  },
+  "rulesDirectory": []
+}
