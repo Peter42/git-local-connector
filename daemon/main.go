@@ -103,19 +103,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 var homeDir string
 
-/*
-func branchesHandler(rw http.ResponseWriter, r *http.Request) {
-	reponame := r.URL.Path[10:]
-	repository, err := gogit.OpenRepository(filepath.Join(homeDir, "git", reponame))
-
-	branches := lookupBranches(repository)
-
-	rw.Header()["Access-Control-Allow-Origin"] = []string{"chrome-extension://hlepfoohegkhhmjieoechaddaejaokhf"}
-	for _, f := range branches {
-		rw.Write([]byte(f))
-		rw.Write([]byte(","))
-	}
-}*/
 
 func main() {
 
@@ -126,6 +113,5 @@ func main() {
 	homeDir = usr.HomeDir
 
 	http.HandleFunc("/api/", handler)
-	//http.HandleFunc("/branches/", branchesHandler)
 	fmt.Println(http.ListenAndServe("localhost:7365", nil))
 }
