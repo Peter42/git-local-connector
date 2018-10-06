@@ -22,7 +22,7 @@ export class RpcClient {
     private options: RpcClientOptions;
 
     //tslint:disable-next-line:no-any
-    private responseHandler = new Map<string, (data: any) => void>();
+    private responseHandler = new Map<string, (err: Error | null, data: any) => void>();
     //tslint:disable-next-line:no-any
     private requestHandler = new Map<PackageType, (data: any) => void>();
 
@@ -64,9 +64,13 @@ export class RpcClient {
     }
 
     public async call<T, T2>(kind: PackageType, data: T, options?: RpcClientCallOptions): Promise<T2> {
+        const callUuid = uuid();
+
         return new Promise<T2>((resolve, reject) => {
-            const callUuid = uuid();
-            this.responseHandler.set(callUuid, (res) => {
+            this.responseHandler.set(callUuid, (err, res) => {
+                if (err) {
+                    return reject(err);
+                }
                 resolve(res);
             });
             if (options && options.timeout || this.options.callTimeout) {
@@ -83,6 +87,8 @@ export class RpcClient {
                 data,
                 uuid: callUuid
             });
+        }).finally(() => {
+            this.responseHandler.delete(callUuid);
         });
     }
 
@@ -104,10 +110,19 @@ export class RpcClient {
 
             return;
         }
+        let error = null;
+        if (obj.kind === PackageType.ErrorResponse) {
+            if (!obj.data || !obj.data.message) {
+                console.warn("Invalid Error Response", obj);
+                error = new Error("error response");
+            } else {
+                error = new Error(obj.data.message);
+            }
+        }
 
         const respHandler = this.responseHandler.get(obj.uuid);
         if (respHandler) {
-            respHandler(obj.data);
+            respHandler(error, obj.data);
 
             return;
         }
