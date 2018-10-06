@@ -1,0 +1,6 @@
+github.com/gorilla/websocket v1.4.0 h1:WDFjx/TMzVgy9VdMMQi2K2Emtwi2QcUQsztZ/zLaH/Q=
+github.com/gorilla/websocket v1.4.0/go.mod h1:E7qHFY5m1UJ88s3WnNqhKjPHQ0heANvMoAMk2YaljkQ=
+github.com/speedata/gogit v0.0.0-20170530073720-f25600b364f0 h1:PTWtN6rxetzMDCofa8Ml1U+X0CZhYVP/mCAtaeW7lok=
+github.com/speedata/gogit v0.0.0-20170530073720-f25600b364f0/go.mod h1:7c0w0ctWxldkfAnImQC8LsGW8yFbS1wTj1bd/nJX034=
+github.com/speedata/mmap-go v0.0.0-20141021215358-6c75090c5598 h1:u1FGPa3y8owczQC/8d3h2546811jPvzFD/xdPHdc0yQ=
+github.com/speedata/mmap-go v0.0.0-20141021215358-6c75090c5598/go.mod h1:vuzeyKHi671OptZvaMRjSl5OVT72r70BlhI4OsTekzM=

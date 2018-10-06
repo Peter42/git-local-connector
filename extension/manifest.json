@@ -1,0 +1,40 @@
+{
+  "manifest_version": 2,
+  "name": "Git Local Connector",
+  "short_name": "GLC",
+  "version": "0.0.1",
+  "description": "TBD",
+  "homepage_url": "https://www.philipp1994.de",
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "icons": {
+    "16": "images/icon-16.png",
+    "48": "images/icon-48.png",
+    "128": "images/icon-128.png"
+  },
+  "browser_action": {
+    "default_icon": "images/icon-48.png",
+    "default_title": "Git Local Connector"
+  },
+  "background": {
+    "scripts": [
+      "build/background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.github.com/*"],
+      "js": ["build/github.js"]
+    },
+    {
+      "matches": ["https://*.gitlab.com/*"],
+      "js": ["build/gitlab.js"]
+    }
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "chrome_style": true
+  },
+  "permissions": [
+    "<all_urls>"
+  ]
+}
