@@ -63,3 +63,7 @@ build:extension:
   - cd extension
   - npm install
   - npm run-script build
+  - npm run-script pack
+  artifacts:
+    paths:
+    - extension/extension.zip

@@ -8,7 +8,8 @@
     "build": "tsc",
     "test": "NODE_ENV=development mocha 'test/**/*.ts'",
     "cover": "NODE_ENV=development nyc -a mocha 'test/**/*.ts'",
-    "lint": "NODE_ENV=development tslint --project tsconfig.json --config tslint.json --format verbose"
+    "lint": "NODE_ENV=development tslint --project tsconfig.json --config tslint.json --format verbose",
+    "pack": "NODE_ENV=development ts-node zipextension.ts"
   },
   "author": "Philipp Stehle",
   "license": "Apache-2.0",
@@ -21,6 +22,9 @@
     "tslint-microsoft-contrib": "^5.2.1"
   },
   "dependencies": {
+    "@types/archiver": "^2.1.2",
+    "@types/node": "^10.11.4",
+    "archiver": "^3.0.0"
   },
   "nyc": {
     "include": [
