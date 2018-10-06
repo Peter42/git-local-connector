@@ -83,7 +83,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				}
 				response = append([]byte("cloneoutput "), response...)
 			} else if command == "open" {
-				exec.Command("explorer", repository.Path).Start()
+				os_open(repository)
 				response = nil
 			} else {
 				response = []byte("unkown command")
