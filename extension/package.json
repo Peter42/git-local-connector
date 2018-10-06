@@ -1,5 +1,6 @@
 {
   "name": "extension",
+  "repository": "https://github.com/Peter42/git-local-connector",
   "version": "0.0.1",
   "description": "tbd",
   "main": "background.js",
@@ -9,7 +10,7 @@
   },
   "author": "Philipp Stehle",
   "license": "Apache-2.0",
-  "dependencies": {
+  "devDependencies": {
     "typescript": "^3.0.3"
   }
 }
