@@ -21,7 +21,6 @@
     "tslint-microsoft-contrib": "^5.2.1"
   },
   "dependencies": {
-    "grpc-web": "^0.4.0"
   },
   "nyc": {
     "include": [
