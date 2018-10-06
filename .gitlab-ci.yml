@@ -3,25 +3,33 @@ stages:
 - test
 - build
 
-compile_daemon:
+before_script:
+- cd extension
+- npm install
+
+compile:daemon:
   stage: compile
   image: golang:1.11
   script:
   - cd daemon
-  - go build -v
+  - go build -v ./...
 
-compile_extension:
+compile:extension:
   stage: compile
   image: node:10
   script:
   - cd extension
-  - npm install
-  - npm build
+  - npm run-script build
 
-test_daemon:
+test:daemon:
   stage: test
   image: golang:1.11
   script:
   - cd daemon
   - go test -cover -v ./...
 
+test:extension:
+  stage: test
+  image: node:10
+  script:
+  - npm run-script build
