@@ -1,9 +1,11 @@
 package main
 
 import (
+	"os/exec"
+
 	"github.com/speedata/gogit"
 )
 
 func os_open(repo *gogit.Repository) {
-	// TODO:
+	exec.Command("xdg-open .", repo.Path).Start()
 }
