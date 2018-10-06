@@ -16,10 +16,16 @@ export class GitLocalService implements Service {
     }
 
     public clone(url: string, localPath?: string | undefined): Promise<string> {
-        return this.backend.call<CloneRequest, CloneResponse>(PackageType.CloneRequest, {
-            repoUrl: url,
-            localPath: localPath
-        }).then((res) => res.output);
+        return this.backend.call<CloneRequest, CloneResponse>(
+            PackageType.CloneRequest,
+            {
+                repoUrl: url,
+                localPath: localPath
+            },
+            {
+                timeout: 0
+            }
+        ).then((res) => res.output);
     }
 
     public open(repo: LocalRepo): Promise<void> {
