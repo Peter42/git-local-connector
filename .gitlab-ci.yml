@@ -24,7 +24,7 @@ test:extension:
   script:
   - cd extension
   - npm install
-  - npm run-script build
+  - npm run-script test
 
 build:daemon:linux:
   stage: build
