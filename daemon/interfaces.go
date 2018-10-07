@@ -1,19 +1,21 @@
 package main
 
-type packeageType string
+type packageType string
 const (
     // requests
-    helloType           packeageType = "Hello"
-    findRepoRequestType packeageType = "FindRepoRequest"
-    cloneRequestType    packeageType = "CloneRequest"
+    helloType           packageType = "Hello"
+    findRepoRequestType packageType = "FindRepoRequest"
+    cloneRequestType    packageType = "CloneRequest"
+    openRequestType     packageType = "OpenRequest"
     // responses
-    cloneResponseType   packeageType = "CloneResponse"
-    errorResponseType   packeageType = "ErrorResponse"
-    voidResponseType    packeageType = "VoidResponse"
+    cloneResponseType   packageType = "CloneResponse"
+    errorResponseType   packageType = "ErrorResponse"
+    voidResponseType    packageType = "VoidResponse"
+    localRepoType       packageType = "LocalRepo"
 )
 
 type packageBasis struct {
-    Kind packeageType  `json:"kind"`
+    Kind packageType   `json:"kind"`
     UUID string        `json:"uuid"`
     Data interface{}   `json:"data"`
 }
@@ -28,8 +30,8 @@ type findRepoRequest struct {
 }
 
 type cloneRequest struct {
-    RepoUrl   string  `json:"repoUrl"`
-    LocalPath string  `json:"localPath"`
+    RepoUrl    string  `json:"repoUrl"`
+    LocalPath *string  `json:"localPath"`
 }
 
 type cloneResponse struct {
@@ -47,6 +49,6 @@ type errorResponse struct {
 //
 
 type localRepo struct {
-    RemoteRepositiory string  `json:"remoteRepositiory"`
-    Path              string  `json:"path"`
+    RemoteRepositiory  string  `json:"remoteRepositiory"`
+    Path              *string  `json:"path"`
 }

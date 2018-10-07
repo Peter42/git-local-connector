@@ -8,9 +8,8 @@ import (
 	"os/exec"
 	"os/user"
 	"path/filepath"
-	"strings"
+	"encoding/json"
 	"errors"
-    "encoding/json"
 
 	"github.com/gorilla/websocket"
 	"github.com/speedata/gogit"
@@ -54,7 +53,7 @@ func readStringMessage(conn *websocket.Conn) (string, error) {
 	}
 }
 
-func send_response(conn *websocket.Conn, kind packeageType, data interface{}, to packageBasis) error {
+func send_response(conn *websocket.Conn, kind packageType, data interface{}, to packageBasis) error {
 	msgobj := packageBasis{
 		Kind: kind,
 		UUID: to.UUID,
@@ -100,7 +99,7 @@ func handshake(conn *websocket.Conn) error {
 		send_error(conn, "Unsupported Protocol Version", pack)
 		return errors.New("Unsupported Protocol Version")
 	}
-	
+
 	// TODO: check uuid
 
 	return send_void(conn, pack)
@@ -121,8 +120,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var repository *gogit.Repository
-	var repoName string
+	var local localRepo
 
 	for {
 		msg, err := readStringMessage(conn)
@@ -130,54 +128,81 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 			return
 		}
-		var response []byte
 
+		var pack packageBasis
+		err = json.Unmarshal([]byte(msg), &pack)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
-		data := strings.Split(msg, " ")
-		command := data[0]
-
-		if command == "setrepo" {
-			repoName = data[1]
-			repoLocation := filepath.Join(homeDir, "git", repoName)
-			repository, err = gogit.OpenRepository(repoLocation)
+		if pack.Kind == findRepoRequestType {
+			var request findRepoRequest
+			hack, _ := json.Marshal(pack.Data)
+			err = json.Unmarshal(hack, &request)
 			if err != nil {
-				response = []byte(strings.Join([]string{"failed", repoLocation}, " "))
-				log.Println(err)
+				send_error(conn, "Request parsing error", pack)
+				continue
+			}
+
+			repoLocation := filepath.Join(homeDir, "git", request.RepoName)
+			_, err = gogit.OpenRepository(repoLocation)
+			if err != nil {
+				local = localRepo{
+					RemoteRepositiory: request.RepoName,
+					Path:              nil}
 			} else {
-				response = []byte(repository.Path)
+				local = localRepo{
+					RemoteRepositiory: request.RepoName,
+					Path:              &repoLocation}
 			}
-		} else if command == "clone" {
-			url := data[1]
-			target := data[2]
-			response = []byte(strings.Join([]string{"cloneoutput", "git", "clone", url, target}, " "))
-			if err := conn.WriteMessage(websocket.TextMessage, response); err != nil {
-				log.Println(err)
-				return
-			}
-			response, err = exec.Command("git", "clone", url, target).CombinedOutput()
+			send_response(conn, localRepoType, local, pack)
+		} else if pack.Kind == cloneRequestType {
+			var request cloneRequest
+			hack, _ := json.Marshal(pack.Data)
+			err = json.Unmarshal(hack, &request)
 			if err != nil {
 				log.Println(err)
+				send_error(conn, "Request parsing error", pack)
+				continue
 			}
-			response = append([]byte("cloneoutput "), response...)
-		} else if command == "open" {
-			os_open(repository)
-			response = nil
-		} else {
-			response = []byte("unkown command")
-		}
 
-		if response != nil {
-			if err := conn.WriteMessage(websocket.TextMessage, response); err != nil {
+			var cloneLocation string
+			if request.LocalPath != nil {
+				cloneLocation = *request.LocalPath
+			} else {
+				cloneLocation = filepath.Join(homeDir, "git", local.RemoteRepositiory)
+			}
+
+			response, err := exec.Command("git", "clone", request.RepoUrl, cloneLocation).CombinedOutput()
+			if err != nil {
 				log.Println(err)
-				return
+				send_error(conn, "could not clone", pack)
 			}
-		}
 
+			local.Path = &cloneLocation
+
+			send_response(conn, cloneResponseType, &cloneResponse{Output: string(response)}, pack)
+
+		} else if pack.Kind == openRequestType {
+			var request openRequest
+			hack, _ := json.Marshal(pack.Data)
+			err = json.Unmarshal(hack, &request)
+			if err != nil {
+				log.Println(err)
+				send_error(conn, "Request parsing error", pack)
+				continue
+			}
+			os_open(*request.Repo.Path)
+			send_void(conn, pack)
+
+		} else {
+			send_error(conn, "unkown command", pack)
+		}
 	}
 }
 
 var homeDir string
-
 
 func main() {
 
