@@ -9,6 +9,8 @@ import (
 	"os/user"
 	"path/filepath"
 	"strings"
+	"errors"
+    "encoding/json"
 
 	"github.com/gorilla/websocket"
 	"github.com/speedata/gogit"
@@ -52,6 +54,59 @@ func readStringMessage(conn *websocket.Conn) (string, error) {
 	}
 }
 
+func send_error(conn *websocket.Conn, msg string, to packageBasis) error {
+	msgobj := packageBasis{
+		Kind: errorResponseType,
+		UUID: to.UUID,
+		Data: &errorResponse{Msg: msg}}
+	msgobjstr, _ := json.Marshal(msgobj)
+	return conn.WriteMessage(websocket.TextMessage, msgobjstr)
+}
+
+func send_void(conn *websocket.Conn, to packageBasis) error {
+	msgobj := packageBasis{
+		Kind: voidResponseType,
+		UUID: to.UUID,
+		Data: nil}
+	msgobjstr, _ := json.Marshal(msgobj)
+	return conn.WriteMessage(websocket.TextMessage, msgobjstr)
+}
+
+func handshake(conn *websocket.Conn) error {
+	msg, err := readStringMessage(conn)
+	if err != nil {
+		return err
+	}
+
+	var pack packageBasis
+	err = json.Unmarshal([]byte(msg), &pack)
+	if err != nil {
+		return err
+	}
+
+	if pack.Kind != helloType {
+		send_error(conn, "Handshake missing", pack)
+		return errors.New("Handshake missing")
+	}
+
+	var helloPack helloPackage
+	hack, _ := json.Marshal(pack.Data)
+	err = json.Unmarshal(hack, &helloPack)
+	if err != nil {
+		send_error(conn, "Handshake parsing error", pack)
+		return err
+	}
+
+	if helloPack.Version != 1 {
+		send_error(conn, "Unsupported Protocol Version", pack)
+		return errors.New("Unsupported Protocol Version")
+	}
+	
+	// TODO: check uuid
+
+	return send_void(conn, pack)
+
+}
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	w.Header()["Access-Control-Allow-Origin"] = []string{"chrome-extension://hlepfoohegkhhmjieoechaddaejaokhf"}
@@ -61,6 +116,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = handshake(conn)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 	var repository *gogit.Repository
 	var repoName string
