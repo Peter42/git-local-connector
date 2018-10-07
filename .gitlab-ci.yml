@@ -34,7 +34,7 @@ build:daemon:linux:
   - GOOS=linux GOARCH=amd64 go build -v ./...
   artifacts:
     paths:
-    - /builds/phil9909/gitlab-local-connector/gitlab-local-connector
+    - /builds/phil9909/gitlab-local-connector/daemon/gitlab-local-connector
 
 #build:daemon:mac:
 #  stage: build
@@ -44,7 +44,7 @@ build:daemon:linux:
 #  - GOOS=darwin GOARCH=amd64 go build -v ./...
 #  artifacts:
 #    paths:
-#    - /builds/phil9909/gitlab-local-connector/gitlab-local-connector
+#    - /builds/phil9909/gitlab-local-connector/daemon/gitlab-local-connector
 
 build:daemon:windows:
   stage: build
@@ -54,7 +54,7 @@ build:daemon:windows:
   - GOOS=windows GOARCH=amd64 go build -v ./...
   artifacts:
     paths:
-    - /builds/phil9909/gitlab-local-connector/gitlab-local-connector.exe
+    - /builds/phil9909/gitlab-local-connector/daemon/gitlab-local-connector.exe
 
 build:extension:
   stage: build
