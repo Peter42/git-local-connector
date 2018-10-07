@@ -151,12 +151,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				local = localRepo{
 					RemoteRepositiory: request.RepoName,
 					Path:              nil}
+				send_response(conn, localRepoType, nil, pack)
 			} else {
 				local = localRepo{
 					RemoteRepositiory: request.RepoName,
 					Path:              &repoLocation}
+				send_response(conn, localRepoType, local, pack)
 			}
-			send_response(conn, localRepoType, local, pack)
 		} else if pack.Kind == cloneRequestType {
 			var request cloneRequest
 			hack, _ := json.Marshal(pack.Data)
@@ -168,21 +169,22 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			var cloneLocation string
-			if request.LocalPath != nil {
+			if request.LocalPath != nil && *request.LocalPath != "" {
 				cloneLocation = *request.LocalPath
 			} else {
 				cloneLocation = filepath.Join(homeDir, "git", local.RemoteRepositiory)
 			}
-
+			
 			response, err := exec.Command("git", "clone", request.RepoUrl, cloneLocation).CombinedOutput()
 			if err != nil {
 				log.Println(err)
+				log.Println(response)
 				send_error(conn, "could not clone", pack)
+			} else {
+				local.Path = &cloneLocation
+				send_response(conn, cloneResponseType, &cloneResponse{Output: string(response)}, pack)
 			}
 
-			local.Path = &cloneLocation
-
-			send_response(conn, cloneResponseType, &cloneResponse{Output: string(response)}, pack)
 
 		} else if pack.Kind == openRequestType {
 			var request openRequest
