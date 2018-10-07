@@ -9,7 +9,7 @@ archive.on('error', (err) => {
 });
 
 archive.pipe(output);
-archive.directory('build/', 'build/');
+archive.directory('dist/', 'dist/');
 archive.directory('images/', 'images/');
 archive.file('manifest.json', {});
 archive.file('options.html', {});
