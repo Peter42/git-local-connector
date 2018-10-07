@@ -1,8 +1,12 @@
 import { GitLocalService } from "./GitLocalService";
 import { LocalRepo } from "./interfaces";
+import { RpcClient } from "./RpcClient";
 
-const api = new GitLocalService();
 let currentRepo: LocalRepo | null = null;
+const client = new RpcClient();
+client.connect();
+
+const api = new GitLocalService(client);
 
 api.findRepo(window.location.pathname.split("/")[2]).then(repo => {
     currentRepo = repo;
