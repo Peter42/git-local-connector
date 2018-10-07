@@ -1,5 +1,5 @@
-import {PackageBasis, PackageType} from './interfaces';
-import {uuid} from './util';
+import { HelloPackage, PackageBasis, PackageType, PROTOCOL_VERSION } from './interfaces';
+import { uuid } from './util';
 
 /**
  *
@@ -41,6 +41,7 @@ export class RpcClient {
         this.ws.addEventListener('message', this.onMessage.bind(this));
         this.ws.addEventListener('open', () => {
             console.debug('websocket connected');
+            this.send<HelloPackage>(PackageType.Hello, { uuid: "", version: PROTOCOL_VERSION });
         });
         this.ws.addEventListener('error', (err) => {
             console.error('websocket error', err);

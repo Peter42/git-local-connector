@@ -2,6 +2,8 @@
  * Interfaces
  */
 
+export const PROTOCOL_VERSION = 1;
+
 export enum PackageType {
     VoidResponse = 'VoidResponse',
     ErrorResponse = 'ErrorResponse',
