@@ -5,7 +5,7 @@
   "description": "tbd",
   "main": "background.js",
   "scripts": {
-    "build": "tsc",
+    "build": "webpack",
     "test": "NODE_ENV=development mocha 'test/**/*.ts'",
     "cover": "NODE_ENV=development nyc -a mocha 'test/**/*.ts'",
     "lint": "NODE_ENV=development tslint --project tsconfig.json --config tslint.json --format verbose",
