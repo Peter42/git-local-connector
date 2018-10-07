@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -8,8 +10,6 @@ import (
 	"os/exec"
 	"os/user"
 	"path/filepath"
-	"encoding/json"
-	"errors"
 
 	"github.com/gorilla/websocket"
 	"github.com/speedata/gogit"
@@ -174,7 +174,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			} else {
 				cloneLocation = filepath.Join(homeDir, "git", local.RemoteRepositiory)
 			}
-			
+
 			response, err := exec.Command("git", "clone", request.RepoUrl, cloneLocation).CombinedOutput()
 			if err != nil {
 				log.Println(err)
@@ -184,7 +184,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				local.Path = &cloneLocation
 				send_response(conn, cloneResponseType, &cloneResponse{Output: string(response)}, pack)
 			}
-
 
 		} else if pack.Kind == openRequestType {
 			var request openRequest
