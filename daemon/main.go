@@ -54,22 +54,21 @@ func readStringMessage(conn *websocket.Conn) (string, error) {
 	}
 }
 
-func send_error(conn *websocket.Conn, msg string, to packageBasis) error {
+func send_response(conn *websocket.Conn, kind packeageType, data interface{}, to packageBasis) error {
 	msgobj := packageBasis{
-		Kind: errorResponseType,
+		Kind: kind,
 		UUID: to.UUID,
-		Data: &errorResponse{Msg: msg}}
+		Data: data}
 	msgobjstr, _ := json.Marshal(msgobj)
 	return conn.WriteMessage(websocket.TextMessage, msgobjstr)
 }
 
+func send_error(conn *websocket.Conn, msg string, to packageBasis) error {
+	return send_response(conn, errorResponseType, &errorResponse{Msg: msg}, to)
+}
+
 func send_void(conn *websocket.Conn, to packageBasis) error {
-	msgobj := packageBasis{
-		Kind: voidResponseType,
-		UUID: to.UUID,
-		Data: nil}
-	msgobjstr, _ := json.Marshal(msgobj)
-	return conn.WriteMessage(websocket.TextMessage, msgobjstr)
+	return send_response(conn, voidResponseType, nil, to)
 }
 
 func handshake(conn *websocket.Conn) error {
