@@ -1,5 +1,5 @@
-import {CloneRequest, CloneResponse, FindRepoRequest, LocalRepo, OpenRequest, PackageType, Service} from './interfaces';
-import {RpcClient} from './RpcClient';
+import { CloneRequest, CloneResponse, FindRepoRequest, LocalRepo, OpenRequest, PackageType, Service } from './interfaces';
+import { RpcClient } from './RpcClient';
 
 /**
  *
@@ -7,7 +7,11 @@ import {RpcClient} from './RpcClient';
 
 export class GitLocalService implements Service {
 
-    private backend = new RpcClient();
+    private backend: RpcClient;
+
+    constructor(backend: RpcClient) {
+        this.backend = backend;
+    }
 
     public findRepo(name: string): Promise<LocalRepo> {
         return this.backend.call<FindRepoRequest, LocalRepo>(PackageType.FindRepoRequest, {
