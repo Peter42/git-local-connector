@@ -36,25 +36,17 @@ export class RpcClient {
         };
     }
 
-    public connect() {
-        this.ws = new WebSocket(this.options.endpoint);
-        this.ws.addEventListener('message', this.onMessage.bind(this));
-        this.ws.addEventListener('open', () => {
-            console.debug('websocket connected');
-            this.send<HelloPackage>(PackageType.Hello, { uuid: "", version: PROTOCOL_VERSION });
-        });
-        this.ws.addEventListener('error', (err) => {
-            console.error('websocket error', err);
-            this.ws = undefined;
-        });
-        this.ws.addEventListener('close', () => {
-            console.info('websocket closed');
-            if (this.options.retryTimeout && this.options.retryTimeout > 0) {
-                setTimeout(this.connect.bind(this), this.options.retryTimeout);
-            }
-            this.ws = undefined;
+    public connect(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.connectInternal((err) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve();
+            });
         });
     }
+
 
     public send<T>(kind: PackageType, data: T): void {
         this.sendInternal({
@@ -95,6 +87,31 @@ export class RpcClient {
 
     public on<T>(kind: PackageType, cb: (data: T) => void): void {
         this.requestHandler.set(kind, cb);
+    }
+
+    private connectInternal(callback: (err: Error | null) => void) {
+        this.ws = new WebSocket(this.options.endpoint);
+        this.ws.addEventListener('message', this.onMessage.bind(this));
+        this.ws.addEventListener('open', () => {
+            console.debug('websocket connected');
+            this.send<HelloPackage>(PackageType.Hello, { uuid: "", version: PROTOCOL_VERSION });
+
+            callback(null);
+        });
+        this.ws.addEventListener('error', (err) => {
+            //console.error('websocket error', err);
+            this.ws = undefined;
+        });
+        this.ws.addEventListener('close', () => {
+            console.info('websocket closed');
+            this.ws = undefined;
+
+            if (this.options.retryTimeout && this.options.retryTimeout > 0) {
+                setTimeout(this.connectInternal.bind(this, callback), this.options.retryTimeout);
+            } else {
+                callback(new Error("Connection failed (or something else)"));
+            }
+        });
     }
 
     private onMessage(evt: MessageEvent): void {
