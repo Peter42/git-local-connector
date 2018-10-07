@@ -7,12 +7,12 @@
   "homepage_url": "https://www.philipp1994.de",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "icons": {
-    "16": "images/icon-16.png",
-    "48": "images/icon-48.png",
-    "128": "images/icon-128.png"
+    "48": "images/LogoV2_48.png",
+    "128": "images/LogoV2_128.png",
+    "512": "images/LogoV2_512.png"
   },
   "browser_action": {
-    "default_icon": "images/icon-48.png",
+    "default_icon": "images/LogoV2_48.png",
     "default_title": "Git Local Connector"
   },
   "background": {

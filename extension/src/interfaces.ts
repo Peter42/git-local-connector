@@ -55,7 +55,7 @@ export interface LocalRepo {
 }
 
 export interface Service {
-    findRepo(name: string): Promise<LocalRepo>;
+    findRepo(name: string): Promise<LocalRepo | null>;
 
     clone(url: string, localPath?: string): Promise<string>;
 

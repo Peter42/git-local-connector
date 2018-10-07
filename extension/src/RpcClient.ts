@@ -29,7 +29,7 @@ export class RpcClient {
     constructor(options?: Partial<RpcClientOptions>) {
         this.options = {
             ...{
-                endpoint: 'ws://localhost:123/api',
+                endpoint: 'ws://localhost:7365/api/',
                 callTimeout: 10000
             },
             ...options

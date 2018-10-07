@@ -1,41 +1,15 @@
-let ws = new WebSocket("ws://localhost:7365/api/");
-ws.onmessage = (msg) => {
+import { GitLocalService } from "./GitLocalService";
+import { LocalRepo } from "./interfaces";
 
-    if(msg.data.startsWith("failed ")) {
-        let cloneLocation = msg.data.substr("failed ".length);
-        let cloneButton: HTMLElement | null;
-        cloneButton = document.querySelector("#js-repo-pjax-container > div.container.new-discussion-timeline.experiment-repo-nav > div.repository-content > div.file-navigation.in-mid-page.d-flex.flex-items-start > details > div > div > div.get-repo-modal-options > div.mt-2 > a.btn.btn-outline.get-repo-btn.tooltipped.tooltipped-s.tooltipped-multiline.js-get-repo");
-        if (cloneButton == null) {
-            console.error("cloneButton is null");
-            return;
-        }
-        cloneButton.innerText = "Clone";
-        cloneButton.removeAttribute("href");
-        cloneButton.addEventListener("click", event => {
-            event.cancelBubble = true;
-            let cloneUrlInput: HTMLInputElement | null;
-            cloneUrlInput = document.querySelector("#js-repo-pjax-container > div.container.new-discussion-timeline.experiment-repo-nav > div.repository-content > div.file-navigation.in-mid-page.d-flex.flex-items-start > details > div > div > div.get-repo-modal-options > div.clone-options.https-clone-options > div > input");
-            if(cloneUrlInput == null) {
-                console.error("cloneUrlInput is null");
-                return;
-            }
-            let cloneUrl = cloneUrlInput.value;
-            ws.send(`clone ${cloneUrl} ${cloneLocation}`);
-        });
-    }
-    else if(msg.data.startsWith("cloneoutput ")) {
-        let cloneoutput = msg.data.substr("cloneoutput ".length);
-        let parent = document.querySelector("#js-repo-pjax-container > div.container.new-discussion-timeline.experiment-repo-nav > div.repository-content > div.file-navigation.in-mid-page.d-flex.flex-items-start > details > div > div > div.get-repo-modal-options > div.mt-2");
-        let div = document.createElement("div");
-        div.innerText = cloneoutput;
-        if(parent == null) {
-            console.error("parent is null");
-            return;
-        }
-        parent.appendChild(div);
-    }
-    else {
-        setBar(`Found a local copy of the repository at ${msg.data}`, [
+const api = new GitLocalService();
+let currentRepo: LocalRepo | null = null;
+
+api.findRepo(window.location.pathname.split("/")[2]).then(repo => {
+    currentRepo = repo;
+    if (!repo) {
+        showCloneButton();
+    } else {
+        setBar(`Found a local copy of the repository at ${repo.path}`, [
             {
                 handler: openFolder,
                 icon: '<svg class="octicon" viewBox="4 4 20 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M19,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4H10L12,6H19A2,2 0 0,1 21,8H21L4,8V18L6.14,10H23.21L20.93,18.5C20.7,19.37 19.92,20 19,20Z" /></svg>',
@@ -53,16 +27,47 @@ ws.onmessage = (msg) => {
             }
         ]);
     }
-    
-    console.log(msg);
-};
-ws.onopen = () => {
-    ws.send("setrepo " + window.location.pathname.split("/")[2]);
-};
+})
+
+
+function showCloneButton() {
+    let cloneLocation = "";
+    let cloneButton: HTMLElement | null;
+    cloneButton = document.querySelector("#js-repo-pjax-container > div.container.new-discussion-timeline.experiment-repo-nav > div.repository-content > div.file-navigation.in-mid-page.d-flex.flex-items-start > details > div > div > div.get-repo-modal-options > div.mt-2 > a.btn.btn-outline.get-repo-btn.tooltipped.tooltipped-s.tooltipped-multiline.js-get-repo");
+    if (cloneButton == null) {
+        console.error("cloneButton is null");
+        return;
+    }
+    cloneButton.innerText = "Clone";
+    cloneButton.removeAttribute("href");
+    cloneButton.addEventListener("click", event => {
+        event.cancelBubble = true;
+        let cloneUrlInput: HTMLInputElement | null;
+        cloneUrlInput = document.querySelector("#js-repo-pjax-container > div.container.new-discussion-timeline.experiment-repo-nav > div.repository-content > div.file-navigation.in-mid-page.d-flex.flex-items-start > details > div > div > div.get-repo-modal-options > div.clone-options.https-clone-options > div > input");
+        if (cloneUrlInput == null) {
+            console.error("cloneUrlInput is null");
+            return;
+        }
+        let cloneUrl = cloneUrlInput.value;
+        api.clone(cloneUrl, cloneLocation).then(showCloneOutput);
+    });
+}
+
+function showCloneOutput(cloneoutput: string) {
+    const parent = document.querySelector("#js-repo-pjax-container > div.container.new-discussion-timeline.experiment-repo-nav > div.repository-content > div.file-navigation.in-mid-page.d-flex.flex-items-start > details > div > div > div.get-repo-modal-options > div.mt-2");
+    const div = document.createElement("div");
+    div.innerText = cloneoutput;
+    if (parent == null) {
+        console.error("parent is null");
+        return;
+    }
+    parent.appendChild(div);
+}
 
 
 function openFolder() {
-    ws.send("open");
+    if (!currentRepo) throw new Error("Repo is not cloned");
+    api.open(currentRepo);
 }
 
 function setBar(text: string, actions: Array<any>) {
@@ -85,7 +90,7 @@ function setBar(text: string, actions: Array<any>) {
     div.appendChild(span);
 
     let sibling = document.querySelector("#js-repo-pjax-container > div.container.new-discussion-timeline.experiment-repo-nav > div.repository-content > div.commit-tease.js-details-container.Details.d-flex");
-    if(sibling == null || sibling.parentElement == null ) {
+    if (sibling == null || sibling.parentElement == null) {
         console.error("problem finding sibling");
         return;
     }
