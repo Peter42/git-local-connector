@@ -1,7 +1,10 @@
 
 module.exports = {
     "mode": "development",
-    "entry": "./src/github.ts",
+    "entry": {
+        "github": "./src/github.ts",
+        "gitlab": "./src/gitlab.ts"
+    },
     "output": {
         "path": __dirname + '/dist',
         "filename": "[name].js"

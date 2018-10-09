@@ -23,11 +23,11 @@
   "content_scripts": [
     {
       "matches": ["https://*.github.com/*"],
-      "js": ["dist/main.js"]
+      "js": ["dist/github.js"]
     },
     {
       "matches": ["https://*.gitlab.com/*"],
-      "js": ["build/gitlab.js"]
+      "js": ["dist/gitlab.js"]
     }
   ],
   "options_ui": {
