@@ -61,7 +61,7 @@ build:extension:
   image: node:10
   script:
   - cd extension
-  - 'sed -ri "s=\"version\": \"([^\"]*)=\"version\": \"\\1.$(date +%y%m%d%H%M)=" manifest.json' # set the version number from x.x.x to x.x.x.datetime
+  - 'sed -ri "s=\"version\": \"([^\"]*)=\"version\": \"\\1.$(git log --oneline | wc -l)=" manifest.json' # set the version number from x.x.x to x.x.x.buildnum
   - npm install
   - npm run-script build
   - npm run-script pack
