@@ -15,11 +15,6 @@
     "default_icon": "images/LogoV2_48.png",
     "default_title": "Git Local Connector"
   },
-  "background": {
-    "scripts": [
-      "build/background.js"
-    ]
-  },
   "content_scripts": [
     {
       "matches": ["https://*.github.com/*"],
