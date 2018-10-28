@@ -74,6 +74,7 @@ build:extension:
 package:linux:
   stage: package
   image: phil9909/fpm
+  entrypoint: [""]
   dependencies:
   - build:daemon:linux
   script:
