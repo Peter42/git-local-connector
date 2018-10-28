@@ -85,4 +85,4 @@ package:linux:
   - fpm -t deb -n test -s dir ./bin=/usr/bin
   artifacts:
     paths:
-      - '*.deb'
+      - 'daemon/*.deb'
