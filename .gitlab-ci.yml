@@ -2,6 +2,7 @@ stages:
 - compile
 - test
 - build
+- package
 
 compile:extension:
   stage: compile
@@ -68,3 +69,18 @@ build:extension:
   artifacts:
     paths:
     - extension/extension.zip
+
+
+package:linux:
+  stage: package
+  image: phil9909/fpm
+  dependencies:
+  - build:daemon:linux
+  script:
+  - cd daemon
+  - mkdir bin
+  - mv gitlab-local-connector ./bin/
+  - fpm -t deb -n test -s dir ./bin=/usr/bin
+  artifacts:
+    paths:
+      - '*.deb'
