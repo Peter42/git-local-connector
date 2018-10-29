@@ -81,8 +81,8 @@ package:linux:
   script:
   - cd daemon
   - mkdir bin
-  - mv gitlab-local-connector ./bin/
-  - fpm -t deb -n test -s dir ./bin=/usr/bin
+  - mv gitlab-local-connector ./bin/gitlab-local-connectord
+  - fpm -t deb -n gitlab-local-connector -s dir ./bin=/usr
   artifacts:
     paths:
       - 'daemon/*.deb'
