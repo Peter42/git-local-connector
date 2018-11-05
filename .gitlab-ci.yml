@@ -82,7 +82,8 @@ package:linux:
   - cd daemon
   - mkdir bin
   - mv gitlab-local-connector ./bin/gitlab-local-connectord
-  - fpm -t deb -n gitlab-local-connector -s dir ./bin=/usr
+  - 'VERSION=$(grep -Po "(?<=\"version\": \")[^\"]*" ../extension/package.json).$(git log --oneline | wc -l)'
+  - fpm -t deb -n gitlab-local-connector -v $VERSION -s dir ./bin=/usr
   artifacts:
     paths:
       - 'daemon/*.deb'
