@@ -99,7 +99,7 @@ package:windows:
   - cd daemon/nuget/git-local-connector
   - mv ../../gitlab-local-connector.exe gitlab-local-connector.exe
   - tar -cf gitlab-local-connector.tar gitlab-local-connector.exe
-  - 'VERSION=$(grep -Po "(?<=\"version\": \")[^\"]*" ../extension/package.json).$(git log --oneline | wc -l)'
+  - 'VERSION=$(grep -Po "(?<=\"version\": \")[^\"]*" ../../../extension/package.json).$(git log --oneline | wc -l)'
   - sed -i "s/SED_VERSION_HERE/$VERSION/" git-local-connector.nuspec
   - choco pack
   artifacts:
