@@ -91,7 +91,7 @@ package:linux:
 package:windows:
   stage: package
   image:
-    name: linuturk/mono-choco
+    name: phil9909/mono-choco-git
     entrypoint: [""]
   dependencies:
   - build:daemon:windows
