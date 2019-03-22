@@ -87,3 +87,21 @@ package:linux:
   artifacts:
     paths:
       - 'daemon/*.deb'
+
+package:windows:
+  stage: package
+  image:
+    name: linuturk/mono-choco
+    entrypoint: [""]
+  dependencies:
+  - build:daemon:windows
+  script:
+  - cd daemon/nuget/git-local-connector
+  - mv ../../../gitlab-local-connector.exe gitlab-local-connector.exe
+  - tar -cf gitlab-local-connector.tar gitlab-local-connector.exe
+  - 'VERSION=$(grep -Po "(?<=\"version\": \")[^\"]*" ../extension/package.json).$(git log --oneline | wc -l)'
+  - sed -i "s/SED_VERSION_HERE/$VERSION/"
+  - choco pack
+  artifacts:
+    paths:
+      - 'daemon/nuget/git-local-connector/*.nupkg'
