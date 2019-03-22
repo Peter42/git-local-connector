@@ -2,7 +2,8 @@ stages:
 - compile
 - test
 - build
-- package
+- packag
+- deploy
 
 compile:extension:
   stage: compile
@@ -102,6 +103,23 @@ package:windows:
   - 'VERSION=$(grep -Po "(?<=\"version\": \")[^\"]*" ../../../extension/package.json).$(git log --oneline | wc -l)'
   - sed -i "s/SED_VERSION_HERE/$VERSION/" git-local-connector.nuspec
   - choco pack
+  artifacts:
+    paths:
+      - 'daemon/nuget/git-local-connector/*.nupkg'
+
+deploy:windows:
+  stage: deploy
+  image:
+    name: centeredge/nuget
+    entrypoint: [""]
+  only:
+    - master
+  dependencies:
+  - package:windows
+  script:
+  - cd daemon/nuget/git-local-connector
+  - set +x
+  - nuget push *.nupkg $NUGET_API_KEY -source $NUGET_FEED_URL
   artifacts:
     paths:
       - 'daemon/nuget/git-local-connector/*.nupkg'
