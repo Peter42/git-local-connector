@@ -198,7 +198,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			send_void(conn, pack)
 
 		} else {
-			send_error(conn, "unkown command", pack)
+			send_error(conn, "unknown command", pack)
 		}
 	}
 }
