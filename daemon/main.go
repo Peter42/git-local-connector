@@ -53,7 +53,7 @@ func readStringMessage(conn *websocket.Conn) (string, error) {
 	}
 }
 
-func send_response(conn *websocket.Conn, kind packageType, data interface{}, to packageBasis) error {
+func sendResponse(conn *websocket.Conn, kind packageType, data interface{}, to packageBasis) error {
 	msgobj := packageBasis{
 		Kind: kind,
 		UUID: to.UUID,
@@ -62,12 +62,12 @@ func send_response(conn *websocket.Conn, kind packageType, data interface{}, to 
 	return conn.WriteMessage(websocket.TextMessage, msgobjstr)
 }
 
-func send_error(conn *websocket.Conn, msg string, to packageBasis) error {
-	return send_response(conn, errorResponseType, &errorResponse{Msg: msg}, to)
+func sendError(conn *websocket.Conn, msg string, to packageBasis) error {
+	return sendResponse(conn, errorResponseType, &errorResponse{Msg: msg}, to)
 }
 
-func send_void(conn *websocket.Conn, to packageBasis) error {
-	return send_response(conn, voidResponseType, nil, to)
+func sendVoid(conn *websocket.Conn, to packageBasis) error {
+	return sendResponse(conn, voidResponseType, nil, to)
 }
 
 func handshake(conn *websocket.Conn) error {
@@ -83,7 +83,7 @@ func handshake(conn *websocket.Conn) error {
 	}
 
 	if pack.Kind != helloType {
-		send_error(conn, "Handshake missing", pack)
+		sendError(conn, "Handshake missing", pack)
 		return errors.New("Handshake missing")
 	}
 
@@ -91,18 +91,18 @@ func handshake(conn *websocket.Conn) error {
 	hack, _ := json.Marshal(pack.Data)
 	err = json.Unmarshal(hack, &helloPack)
 	if err != nil {
-		send_error(conn, "Handshake parsing error", pack)
+		sendError(conn, "Handshake parsing error", pack)
 		return err
 	}
 
 	if helloPack.Version != 1 {
-		send_error(conn, "Unsupported Protocol Version", pack)
+		sendError(conn, "Unsupported Protocol Version", pack)
 		return errors.New("Unsupported Protocol Version")
 	}
 
 	// TODO: check uuid
 
-	return send_void(conn, pack)
+	return sendVoid(conn, pack)
 
 }
 
@@ -141,7 +141,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			hack, _ := json.Marshal(pack.Data)
 			err = json.Unmarshal(hack, &request)
 			if err != nil {
-				send_error(conn, "Request parsing error", pack)
+				sendError(conn, "Request parsing error", pack)
 				continue
 			}
 
@@ -151,12 +151,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				local = localRepo{
 					RemoteRepositiory: request.RepoName,
 					Path:              nil}
-				send_response(conn, localRepoType, nil, pack)
+				sendResponse(conn, localRepoType, nil, pack)
 			} else {
 				local = localRepo{
 					RemoteRepositiory: request.RepoName,
 					Path:              &repoLocation}
-				send_response(conn, localRepoType, local, pack)
+				sendResponse(conn, localRepoType, local, pack)
 			}
 		} else if pack.Kind == cloneRequestType {
 			var request cloneRequest
@@ -164,7 +164,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			err = json.Unmarshal(hack, &request)
 			if err != nil {
 				log.Println(err)
-				send_error(conn, "Request parsing error", pack)
+				sendError(conn, "Request parsing error", pack)
 				continue
 			}
 
@@ -179,10 +179,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Println(err)
 				log.Println(response)
-				send_error(conn, "could not clone", pack)
+				sendError(conn, "could not clone", pack)
 			} else {
 				local.Path = &cloneLocation
-				send_response(conn, cloneResponseType, &cloneResponse{Output: string(response)}, pack)
+				sendResponse(conn, cloneResponseType, &cloneResponse{Output: string(response)}, pack)
 			}
 
 		} else if pack.Kind == openRequestType {
@@ -191,14 +191,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			err = json.Unmarshal(hack, &request)
 			if err != nil {
 				log.Println(err)
-				send_error(conn, "Request parsing error", pack)
+				sendError(conn, "Request parsing error", pack)
 				continue
 			}
-			os_open(*request.Repo.Path)
-			send_void(conn, pack)
+			osOpen(*request.Repo.Path)
+			sendVoid(conn, pack)
 
 		} else {
-			send_error(conn, "unknown command", pack)
+			sendError(conn, "unknown command", pack)
 		}
 	}
 }

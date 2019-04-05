@@ -4,6 +4,6 @@ import (
 	"os/exec"
 )
 
-func os_open(path string) {
+func osOpen(path string) {
 	exec.Command("explorer", path).Start()
 }
